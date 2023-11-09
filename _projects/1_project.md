@@ -1,81 +1,136 @@
 ---
 layout: page
-title: project 1
-description: a project with a background image
-img: assets/img/12.jpg
+title: Stable Diffusion with Self-Guided Attention and ControlNet
+description: Self-guided attention and ControlNet guidance capabilities on pre-trained Stable Diffusion.
+img: assets/img/MR_p9.png
 importance: 1
-category: work
-related_publications: einstein1956investigations, einstein1950meaning
+category: computer vision
+# related_publications: einstein1956investigations, einstein1950meaning
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+# Stable Diffusion with Self-Guided Attention and ControlNet
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+## 1. Overview
 
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+This is Stable Diffusion built on pre-trained Stable Diffusion v1.5 weights with Self-Attention Guidelines (SAG) to enhance generated image's stability. It also uses ControlNet, a neural network model, to support additional input to control the image generation. Additionally, the model can add artistic features to the generated image by utilizing trained style weights.
 
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
+This model is built on Hugging Face modules. It utilizes Tokenizer, Text Encoder, Variational Auto Encoder and Unet model from it.
 
-You can also put regular text between your rows of images.
-Say you wanted to write a little bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, *bled* for your project, and then... you reveal its glory in the next row of images.
+1. Tokenizer - creates tokens with padding to match required length.
+2. Text Encoder - Get token embedding from tokens and the positional embedding. It is then combined and fed to a transformer model to get the output embedding
+3. UNet - Takes in noisy latents and predicts the noise residual of the latent shape.
+4. Variational Autoencoder - Takes in the latents and decodes it into the image space.
 
+## 2. Features
 
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
+### 2.1. Self Attention Guidelines
 
+Self attention guidelines helps stable diffusion to improve generated image. It uses the intermediate self-attention maps to adversially blur and guides the model. Parameter `sag_scale` controls the SAG influence on the model.
 
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
+### 2.2. ControlNet support
 
-{% raw %}
-```html
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
+ControlNet conditions the diffusion model to learn specific user input conditions (like edges, depth). This helps it generate images which are related to the desired spatial context. `canny` and `openpose` controlnets are supported in this application. Conditional input image such as edge map, keypoints are also provided along with the controlnet model for inference.
+`controlnet_cond_scale` parameter controls the scale to which the generated image are faithful to the conditional image.
+
+### 2.3. Style
+
+The application is trained on a novel art via Textual Inversion. In our case, images stylistically related to pop-art are trained in order to associate it with `<pop-art>` word within the text encoder embedding. Training images and the weights for style training are available here [\<pop-art\>](https://huggingface.co/sd-concepts-library/pop-art).
+
+To use the style, add <pop-art> in the prompt. While running the model, enable `style_flag` to use the style.
+
+| ![simg_1](results/popart-3.jpg) | ![simg_2](results/popart-4.jpg) | ![simg_3](results/popart-5.jpg) | ![simg_4](results/popart-7.jpg) |
+| ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- |
+
+## 3. Deploy and Run
+
+Stable Diffusion can be run in the following two ways-
+
+### 3.1. Clone Repository and execute
+
+Clone repository and change directory-
+
 ```
-{% endraw %}
+git clone https://github.com/Shashank-Holla/diffusion-controlnet-sag.git
+
+cd diffusion-controlnet-sag/
+```
+
+Install dependencies-
+
+```
+pip install -r requirements.txt
+```
+
+Run model
+
+```
+!python main.py --prompt "Margot Robbie as wonderwoman in style" --seed 3 --batch_size 1 --controlNet_image ./control_images/controlimage_1.jpg --controlNet_type canny --style_flag T --sag_scale 0.75 --controlnet_cond_scale 1.0
+```
+
+### 3.2. Install CLI application and run
+
+This repository is also available as CLI application. Build files are available in `dist` folder in this repository. Control Image and style weights path must be absolute. Valid Control Image is required if controlnet model is provided.
+
+Clone repository and change directory-
+
+```
+git clone https://github.com/Shashank-Holla/diffusion-controlnet-sag.git
+
+cd diffusion-controlnet-sag/
+```
+
+Install distribution-
+
+```
+!pip install dist/diffusion-0.0.7-py3-none-any.whl
+```
+
+Run application `generate`. Provide input as prompted-
+
+```
+/usr/local/bin/generate
+```
+
+## 4. Results
+
+Shared here are few run results by changing the various parameters.
+
+### 4.1. By changing SAG scale and adding artistic style
+
+These run results are by varying SAG scale and adding artistic style.
+
+| Prompt Type                                                                      | Prompt                                                                                                                         | Generated Image             |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| Generation with SAG; without ControlNet without Style addition SAG scale changes | `Prompt: "Margot Robbie as wonderwoman in  polychrome, good anatomy,  best and quality, extremely detailed"  SAG_scale: 0.25 ` | ![img_6](results/MR_p6.png) |
+| Generation with SAG; without ControlNet without Style addition SAG scale changes | `Prompt: "Margot Robbie as wonderwoman in  polychrome, good anatomy,  best and quality, extremely detailed" SAG_scale: 1.0`    | ![img_7](results/MR_p7.png) |
+| Generation with SAG; without ControlNet with Style Addition                      | `"Margot Robbie as wonderwoman in <pop-art> style" SAG_scale: 0.9`                                                             | ![img_8](results/MR_p8.png) |
+
+### 4.2. By adding ControlNet- Canny conditioning
+
+Below is the control image used. Edge map is fed as the conditioning image for stable diffusion.
+
+| Control Image                 | Extracted features for spatial context |
+| ----------------------------- | -------------------------------------- |
+| ![img_10](results/MR_p10.png) | ![img_11](results/MR_p11.png)          |
+
+Images with pop-art style shows the style did not exist in the base Stable Diffusion model and is added with the new weights and the newly added word `<pop-art>`. These images also shows how the model performs when the scale of controlNet conditioning is varied.
+
+The second image has `controlnet_cond_scale` of 1.0 and closely follows the edge structure of the conditioning image.
+
+| Prompt Type                                                                                     | Prompt                                                                                                                                                          | Generated Image             |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Generation with SAG; with Canny ControlNet without Style addition                               | `Prompt: "Margot Robbie as wonderwoman in polychrome,  good anatomy,  best and quality,  extremely detailed" ControlNet with Canny controlnet_cond_scale: 0.5 ` | ![img_9](results/MR_p9.png) |
+| Generation with SAG; with Canny ControlNet without Style addition Controlnet_cond_scale changes | `Prompt: Margot Robbie as wonderwoman in style" ControlNet with Canny  controlnet_cond_scale: 1.0`                                                              | ![img_1](results/MR_p1.png) |
+| Generation with SAG; with Canny ControlNet with Style addition                                  | `"Margot Robbie as wonderwoman in <pop-art> style" controlnet_cond_scale: 0.25`                                                                                 | ![img_2](results/MR_p2.png) |
+
+### 4.3. By adding ControlNet- Openpose
+
+These images have been generated by passing keypoint control image.
+| Control Image | Extracted features for spatial context |
+|---------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ![img_12](results/MR_p12.png) | ![img_13](results/MR_p13.png) |
+
+| Prompt Type                                                                                     | Prompt                                                                                                          | Generated Image             |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Generation with SAG; with OpenPose ControlNet without Style addition                            | `Prompt: "Margot Robbie as wonderwoman in style" ControlNet with OpenPose controlnet_cond_scale: 1.0 `          | ![img_5](results/MR_p5.png) |
+| Generation with SAG; with OpenPose ControlNet with Style addition Controlnet_cond_scale changes | `Prompt: Margot Robbie as wonderwoman in <pop-art> style" ControlNet with OpenPose  controlnet_cond_scale: 1.0` | ![img_4](results/MR_p4.png) |

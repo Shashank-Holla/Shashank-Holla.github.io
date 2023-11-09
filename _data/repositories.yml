@@ -1,12 +1,8 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - Shashank-Holla
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - Shashank-Holla/DepthEstimation-MaskPrediction
+  - Shashank-Holla/diffusion-controlnet-sag
+  - Shashank-Holla/Roof-segmentation-in-overhead-satellite-views
+  - Shashank-Holla/Schrodingers_Cat-Dataset
