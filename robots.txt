@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://Shashank-Holla.github.ios/sitemap.xml
+Sitemap: https://Shashank-Holla.github.io/sitemap.xml
