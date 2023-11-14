@@ -4,9 +4,9 @@ title: projects
 permalink: /projects/
 description: Selected collection of personal projects.
 nav: true
-# nav_order: 2
+nav_order: 2
 display_categories: [computer vision]
-horizontal: false
+horizontal: true
 ---
 
 <!-- pages/projects.md -->

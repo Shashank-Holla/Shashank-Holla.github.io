@@ -10,6 +10,8 @@ category: computer vision
 
 ## 1. Overview
 
+---
+
 This is Stable Diffusion built on pre-trained Stable Diffusion v1.5 weights with Self-Attention Guidelines (SAG) to enhance generated image's stability. It also uses ControlNet, a neural network model, to support additional input to control the image generation. Additionally, the model can add artistic features to the generated image by utilizing trained style weights.
 
 This model is built on Hugging Face modules. It utilizes Tokenizer, Text Encoder, Variational Auto Encoder and Unet model from it.
@@ -20,6 +22,8 @@ This model is built on Hugging Face modules. It utilizes Tokenizer, Text Encoder
 4. Variational Autoencoder - Takes in the latents and decodes it into the image space.
 
 ## 2. Features
+
+---
 
 ### 2.1. Self Attention Guidelines
 
@@ -38,16 +42,16 @@ To use the style, add <pop-art> in the prompt. While running the model, enable `
 
 <div class="row">
 <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/stablediffusion/popart-3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/stablediffusion/popart-3.jpg" title="pop-art-1" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/stablediffusion/popart-4.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/stablediffusion/popart-4.jpg" title="pop-art-2" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/stablediffusion/popart-5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/stablediffusion/popart-5.jpg" title="pop-art-3" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/stablediffusion/popart-7.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/stablediffusion/popart-7.jpg" title="pop-art-4" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
@@ -55,6 +59,8 @@ To use the style, add <pop-art> in the prompt. While running the model, enable `
 </div>
 
 ## 3. Deploy and Run
+
+---
 
 Stable Diffusion can be run in the following two ways-
 
@@ -106,6 +112,8 @@ Run application `generate`. Provide input as prompted-
 
 ## 4. Results
 
+---
+
 Shared here are few run results by changing the various parameters.
 
 ### 4.1. By changing SAG scale and adding artistic style
@@ -113,48 +121,143 @@ Shared here are few run results by changing the various parameters.
 These run results are by varying SAG scale and adding artistic style.
 
 <div class="row">
+    <div class="container mt-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Prompt Type</th>
+                    <th scope="col">Prompt</th>
+                    <th scope="col">Generated Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Generation with SAG; without ControlNet without Style addition SAG scale changes</td>
+                    <td>Prompt: "Margot Robbie as wonderwoman in  polychrome, good anatomy,  best and quality, extremely detailed"
+                      SAG_scale: 0.25 </td>
+                    <td>
+                        {% include figure.html path="assets/img/stablediffusion/MR_p6.png" title="MR-p6" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Generation with SAG; without ControlNet without Style addition SAG scale changes</td>
+                    <td>Prompt: "Margot Robbie as wonderwoman in  polychrome, good anatomy,  best and quality, extremely detailed"
+                     SAG_scale: 1.0</td>
+                    <td>{% include figure.html path="assets/img/stablediffusion/MR_p7.png" title="MR-p7" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Generation with SAG; without ControlNet with Style Addition</td>
+                    <td>"Margot Robbie as wonderwoman in pop-art style" 
+                    SAG_scale: 0.9</td>
+                    <td>{% include figure.html path="assets/img/stablediffusion/MR_p8.png" title="MR-p7" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<br/>
+<br/>
+
+### 4.2. By adding ControlNet- Canny conditioning
+
+Below is the control image used. Edge map is fed as the conditioning image for stable diffusion.
+
+<div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/stablediffusion/MR_p10.png" title="controlImg-1" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/stablediffusion/MR_p11.png" title="cannyresult-1" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
 
-You can also put regular text between your rows of images.
-Say you wanted to write a little bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+Images with pop-art style shows the style did not exist in the base Stable Diffusion model and is added with the new weights and the newly added word `<pop-art>`. These images also shows how the model performs when the scale of controlNet conditioning is varied.
 
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+The second image has `controlnet_cond_scale` of 1.0 and closely follows the edge structure of the conditioning image.
+
+<div class="row">
+    <div class="container mt-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Prompt Type</th>
+                    <th scope="col">Prompt</th>
+                    <th scope="col">Generated Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Generation with SAG; with Canny ControlNet without Style addition</td>
+                    <td>Prompt: "Margot Robbie as wonderwoman in polychrome,  good anatomy,  best and quality,  extremely detailed" 
+                    ControlNet with Canny 
+                    controlnet_cond_scale: 0.5 </td>
+                    <td>
+                        {% include figure.html path="assets/img/stablediffusion/MR_p9.png" title="MR-p9" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Generation with SAG; with Canny ControlNet without Style addition Controlnet_cond_scale changes</td>
+                    <td>Prompt: Margot Robbie as wonderwoman in style" 
+                    ControlNet with Canny  
+                    controlnet_cond_scale: 1.0</td>
+                    <td>{% include figure.html path="assets/img/stablediffusion/MR_p1.png" title="MR-p1" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Generation with SAG; with Canny ControlNet with Style addition</td>
+                    <td>"Margot Robbie as wonderwoman in pop-art style" 
+                    controlnet_cond_scale: 0.25"</td>
+                    <td>{% include figure.html path="assets/img/stablediffusion/MR_p2.png" title="MR-p2" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+</div>
+<br/>
+<br/>
+
+### 4.3. By adding ControlNet- Openpose
+
+These images have been generated by passing keypoint control image.
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/stablediffusion/MR_p12.png" title="controlImg-1" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/stablediffusion/MR_p13.png" title="cannyresult-1" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
+
+<div class="row">
+    <div class="container mt-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Prompt Type</th>
+                    <th scope="col">Prompt</th>
+                    <th scope="col">Generated Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Generation with SAG; with OpenPose ControlNet without Style addition</td>
+                    <td>Prompt: "Margot Robbie as wonderwoman in style" ControlNet with OpenPose controlnet_cond_scale: 1.0 </td>
+                    <td>
+                        {% include figure.html path="assets/img/stablediffusion/MR_p5.png" title="MR-p5" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Generation with SAG; with OpenPose ControlNet with Style addition Controlnet_cond_scale changes</td>
+                    <td>Prompt: Margot Robbie as wonderwoman in &lt pop-art &gt style" ControlNet with OpenPose  controlnet_cond_scale: 1.0</td>
+                    <td>{% include figure.html path="assets/img/stablediffusion/MR_p4.png" title="MR-p4" class="img-fluid rounded z-depth-1" %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
-
-{% raw %}
-
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.html path="assets/img/6.jpg" title="example image"
-    class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.html path="assets/img/11.jpg" title="example image"
-    class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
-
-{% endraw %}
