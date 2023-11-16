@@ -6,6 +6,7 @@ img: assets/img/MR_p9.png
 importance: 1
 category: computer vision
 # related_publications: einstein1956investigations, einstein1950meaning
+giscus_comments: true
 ---
 
 ## 1. Overview

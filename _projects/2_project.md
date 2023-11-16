@@ -1,83 +1,53 @@
 ---
 layout: page
-title: project 2
-description: a project with a background image and giscus comments
+title: AIMANet- Detecting Heart Rate from Facial Videos
+description: Fully convolutional neural network to detec
 img: assets/img/3.jpg
 importance: 2
 category: computer vision
 giscus_comments: true
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+## 1. Overview
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+This project is a fully convolutional neural network to detect heart rate from facial videos. This is a state-of-the-art model reimplemented in PyTorch and trained and evaluated on the UBFC-Phys dataset. The model is also trained and evaluated on data with/without background to examine the impact on the model's performance.
 
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+The heart pumps blood throughout the body causing changes in the amount of blood under the skin. This affects the amount of light absorbed and reflected by the skin. This is used to estimate the Blood Volume Pulse (BVP) signal, which can be used to infer the heart rate.
+Previous research has focused on using photoplethysmography (PPG) signals to measure blood volume changes in the skin using light.
+Remote photoplethysmography (rPPG) is a method for measuring PPG signals from a distance using a video camera, allowing for PPG measurements without direct skin contact.
 
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+## 2. Dataset description
+
+The UBFC-Phys dataset was collected from 56 participants. This includes video recordings of participants undergoing three tasks along with their BVP signal. The tasks are a rest task (T1), a speech task (T2), and an arithmetic task (T3).
+
+The participants completed the three-step experience. We used a subset of the dataset containing data from 26 participants, containing videos with a duration of over 230 minutes. The videos were recorded at 35 frames per second (fps) and the BVP signal was recorded at 64Hz.
+
+<div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/aimanet/dataset_description.png" title="dataset_prep" class="img-fluid rounded z-depth-1" %}
     </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+
+### 3. Model Architecture
+
+The primary objective of our architecture is to learn the mapping to translate the spatial information in a RGB image to latent encoding corresponding to the pulse signals. The architecture is also required to learn features that account for noise factors like head movement and changes in lighting. This is achieved by incorporating a temporal shift convolution attention mechanism.
+
+For this purpose, the architecture uses two branches to learn facial and motion features with a spatial attention module. The first branch is used to learn the temporal motion information while the second branch learns the spatial facial information. One of the ways to learn the temporal motion information is with 3D convolutions. But, 3D convolution introduces high computation cost which makes it infeasible for real time computation and inference.
+
+To this end, the architecture leverages Time Shift Attention based Convolution (TS-CAN) to remove the need for 3D convolution operations while still allowing for spatial-temporal modeling. TS-CAN has two main components: the temporal shift module (TSM) and an attention module. TSM splits the input data into three chunks and shifts the first and second chunks along the temporal axis, while the third chunk remains unchanged. This allows information to be exchanged among neighboring frames without adding any additional parameters to the network. The architecture uses TSM in the motion branch. The appearance branch takes in the mean applied input frame and applies Attention.
+
+<div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/aimanet/model_branch.jpg" title="dataset_prep" class="img-fluid rounded z-depth-1" %}
     </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
 
-You can also put regular text between your rows of images.
-Say you wanted to write a little bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+### 4. Model Hyperparameters
 
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.html path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
+- Optimizer - Adadelta optimizer
+- Loss function - MSE Loss
+- Epochs - 8
 
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
+### 5. Results
 
-{% raw %}
+The 2 experiments yielded interesting results where the Mean Squared Error (MSE) is almost the same for both the cases. This could be due to the controlled nature of the dataset, where everyone was recorded with the same static background under equal lighting conditions and distance. Furthermore, running more experiments on the complete dataset and for more epochs could yield more precise results.
 
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.html path="assets/img/6.jpg" title="example image"
-    class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.html path="assets/img/11.jpg" title="example image"
-    class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
-
-{% endraw %}
+| MSE (with background) | MSE (without background) |
+| :-------------------: | :----------------------: |
+|        0.3457         |          0.3455          |
