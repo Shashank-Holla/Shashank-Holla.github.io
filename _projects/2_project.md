@@ -1,8 +1,8 @@
 ---
 layout: page
 title: AIMANet- Detecting Heart Rate from Facial Videos
-description: Fully convolutional neural network to detec
-img: assets/img/3.jpg
+description: Fully convolutional neural network to detect heart rate
+img: assets/img/aimanet/model_branch.jpg
 importance: 2
 category: computer vision
 giscus_comments: true
