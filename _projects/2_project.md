@@ -5,7 +5,7 @@ description: Fully convolutional neural network to detect heart rate
 img: assets/img/aimanet/model_branch.jpg
 importance: 2
 category: computer vision
-giscus_comments: true
+giscus_comments: false
 ---
 
 ## 1. Overview
